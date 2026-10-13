@@ -10,7 +10,7 @@
 
 # 
 
-# \*\*Early Development (v0.1.0)\*\*
+# **Early Development (v0.1.0)**
 
 # 
 
