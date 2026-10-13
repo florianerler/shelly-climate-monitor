@@ -1,142 +1,92 @@
-# \# Shelly Climate Monitor
+# Shelly Climate Monitor
 
-# 
+A Python-based IoT project for monitoring and analyzing indoor temperature and humidity using Shelly H&T Gen3 sensors.
 
-# A Python-based room climate monitoring project designed to retrieve, process, and eventually visualize temperature and humidity data from Shelly H\&T Gen3 sensors.
+## Project Status
 
-# 
+**Early Development | Offline Sensor Testing**
 
-# \## Project Status
+The project is currently under development as part of my Python learning journey.
 
-# 
+Basic HTTP communication and JSON processing have been successfully tested using httpbin.org.
 
-# \*\*Early Development (v0.1.0)\*\*
+The latest development stage focuses on processing simulated Shelly sensor data without requiring an active network connection.
 
-# 
+Direct communication with the physical Shelly sensor is still pending.
 
-# The project currently implements a basic HTTP client using Python's `requests` library. Communication and JSON processing are being tested using the public HTTP testing service httpbin.org.
+## Current Features
 
-# 
+- HTTP GET requests using the `requests` library
+- JSON response processing
+- Separate functions for data retrieval and processing
+- Basic network exception handling
+- Configurable request timeout
+- Offline testing with simulated sensor data
+- Extraction of temperature and relative humidity values
+- Formatted terminal output
 
-# Direct communication with the Shelly H\&T Gen3 sensor has not yet been tested successfully.
+## Requirements
 
-# 
+- Python 3
+- `requests` library for HTTP functionality
 
-# \## Current Features
+Install dependencies:
 
-# 
+`python -m pip install -r requirements.txt`
 
-# \- HTTP GET requests using `requests`
+## Offline Testing
 
-# \- JSON response parsing
+The current development version uses a simulated JSON response containing temperature and humidity measurements.
 
-# \- HTTP status code retrieval
+Example test data:
 
-# \- Separate functions for data retrieval and processing
+```python
+testdaten = {
+    "temperature:0": {"tC": 22.4},
+    "humidity:0": {"rh": 48.5}
+}
+```
 
-# \- Basic network exception handling
+Expected output:
 
-# \- Five-second request timeout
+```text
+temperatur: 22.4 °C
+luftfeuchtigkeit: 48.5 %
+```
 
-# \- Automatic polling every 60 seconds
+Run the current program using:
 
-# 
+`python shelly_monitor.py`
 
-# \## Requirements
+## Planned Features
 
-# 
+- [x] Basic HTTP communication
+- [x] JSON response processing
+- [x] Offline sensor data simulation
+- [x] Temperature and humidity extraction
+- [ ] Connect to the physical Shelly H&T Gen3
+- [ ] Improve network error handling
+- [ ] Support multiple sensors
+- [ ] Store measurements in CSV files
+- [ ] Visualize historical data with Matplotlib
+- [ ] Calculate dew point
+- [ ] Evaluate indoor climate conditions
+- [ ] Build a graphical monitoring dashboard
 
-# \- Python 3
+## Hardware
 
-# \- Python package: `requests`
+**Target sensor:** Shelly H&T Gen3
 
-# \- Internet access for the current test endpoint
+**Communication:** Wi-Fi / HTTP API
 
-# 
+## About
 
-# Install the required package:
+This project combines my interests in electrical engineering, environmental measurements, and Python programming.
 
-# 
+The goal is to develop a modular monitoring application while learning practical software development, networking, and data analysis.
 
-# `python -m pip install requests`
+Developed as a personal learning project.
 
-# 
+## License
 
-# \## Usage
-
-# 
-
-# Run the program:
-
-# 
-
-# `python shelly\_monitor.py`
-
-# 
-
-# The application currently requests data from `https://httpbin.org/get` and prints the URL returned in the JSON response.
-
-# 
-
-# Example output:
-
-# 
-
-# `Versuche Verbindung herzustellen...`
-
-# 
-
-# `https://httpbin.org/get`
-
-# 
-
-# Press Ctrl+C to stop the program.
-
-# 
-
-# \## Planned Features
-
-# 
-
-# \- \[ ] Connect to Shelly H\&T Gen3 via its local API
-
-# \- \[ ] Extract temperature and relative humidity measurements
-
-# \- \[ ] Monitor multiple rooms
-
-# \- \[ ] Save historical measurements to CSV
-
-# \- \[ ] Visualize climate data using Matplotlib
-
-# \- \[ ] Calculate dew point and evaluate room climate
-
-# \- \[ ] Improve error handling and connection diagnostics
-
-# 
-
-# \## Hardware
-
-# 
-
-# Target device: \*\*Shelly H\&T Gen3\*\*
-
-# 
-
-# Communication: Wi-Fi / HTTP API
-
-# 
-
-# \## About
-
-# 
-
-# This project is part of my journey learning Python, networking, and IoT development.
-
-# 
-
-# The goal is to build a modular monitoring application that combines practical programming experience with real-world environmental sensor data.
-
-# 
-
-# Developed as a personal learning project.
-
+This project is licensed under the MIT License.
