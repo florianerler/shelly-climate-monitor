@@ -10,7 +10,11 @@ The long-term objective is to develop a modular environmental monitoring system 
 
 ## Current Status
 
+ feature/shelly-live-integration
 **Live sensor integration: Functional prototype**
+
+# **Early Development (v0.1.0)**
+ main
 
 Currently implemented features:
 
