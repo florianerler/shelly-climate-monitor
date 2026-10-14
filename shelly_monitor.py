@@ -46,5 +46,5 @@ if __name__ == "__main__":
             print("Verbindung fehlgeschlagen!")
             print("Nächster Versuch in 30 Sekunden..")  
         
-    time.sleep(30)
+        time.sleep(30)
     
