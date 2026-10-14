@@ -1,64 +1,87 @@
 # Shelly Climate Monitor
 
-**A Python-based environmental monitoring application for the Shelly H&T Gen3 sensor.**
+**A Python-based environmental monitoring and automated testing project for the Shelly H&T Gen3 sensor.**
 
-Shelly Climate Monitor is a personal programming and IoT development project focused on retrieving, processing and evaluating real-world environmental measurements.
+Shelly Climate Monitor is a personal Python and IoT development project focused on retrieving, processing, evaluating, and testing real-world environmental measurements.
 
-The project started with basic HTTP requests and offline JSON testing. It has since evolved into a working prototype that communicates with a physical Shelly H&T Gen3 sensor through the local network.
+The project began with basic HTTP requests and offline JSON testing. It gradually evolved into a functional prototype capable of communicating with a physical Shelly H&T Gen3 sensor over a local network.
 
-The long-term objective is to develop a modular environmental monitoring system capable of collecting, storing, visualizing and analyzing sensor data over time.
+The final development stage introduced automated unit testing, allowing the application's data processing and climate evaluation functions to be verified independently of the physical sensor.
 
-## Current Status
+The project documents the progression from fundamental Python concepts to a small, modular, hardware-connected application with automated software tests and version-controlled development.
 
- feature/shelly-live-integration
-**Live sensor integration: Functional prototype**
+## Project Status
 
-# **Early Development (v0.1.0)**
- main
+**Status: Completed Learning Project**
 
-Currently implemented features:
+Shelly Climate Monitor has reached its intended educational objectives.
 
-- HTTP communication with a Shelly H&T Gen3
+The final prototype implements live sensor communication, temperature and humidity evaluation, basic exception handling, external device configuration, and an automated unit test suite.
+
+**Final local test result: 11 tests passed, 0 errors, 0 failures.**
+
+This marks the completion of the project's planned learning and development cycle.
+
+The repository remains available as a documented, functional prototype and as a reference for future software development.
+
+The experience and technical knowledge gained throughout this project will be carried forward into a new, independent development initiative focused on custom measurement hardware, embedded programming, and modular sensor systems.
+
+### Implemented Features
+
+- HTTP communication with a Shelly H&T Gen3 sensor
 - Retrieval and processing of JSON sensor responses
 - Extraction of temperature and relative humidity
-- Returning measurement values as a Python tuple
+- Measurement values returned as a Python tuple
 - Independent temperature and humidity evaluation functions
-- Basic connection error handling
+- Basic network exception handling
 - Automatic retry attempts
-- Separation of local sensor configuration from public source code
+- Configurable sensor IP address
+- Separation of local configuration from public source code
+- Modular functions using parameters and return values
+- Separation of function definitions from program execution
+- Automated unit testing with Python's built-in `unittest` framework
+- Eleven successfully executed unit tests
+- Version-controlled development using Git and GitHub
+- Documented development history and debugging process
 
-The software currently operates through a Python console.
+The application operates through a Python console.
 
 ## Hardware
 
 | Component | Description |
 |---|---|
 | Sensor | Shelly H&T Gen3 |
-| Connection | Wi-Fi |
+| Communication | Wi-Fi |
 | Interface | Shelly HTTP RPC API |
 | Host | Windows PC running Python |
 | Development environment | Thonny |
+| Version control | Git / GitHub |
+| Testing framework | Python `unittest` |
 
 ### Physical Sensor
 
 ![Shelly H&T Gen3](assets/shelly-hnt-gen3.jpg)
 
-*The physical Shelly H&T Gen3 sensor used during development.*
+*The physical Shelly H&T Gen3 sensor used during development and live communication testing.*
 
 ## Example Output
 
-![Program execution](assets/console-output.png)
+![Program execution](assets/console_output.png)
 
 Example console output from a successful measurement:
 
-    Versuche Verbindung herzustellen...
-    temperatur: 24.7 °C
-    luftfeuchtigkeit: 45.5 %
-    (24.7, 45.5)
-    zu warm
-    optimal
+```text
+Versuche Verbindung herzustellen...
+temperatur: 24.7 °C
+luftfeuchtigkeit: 45.5 %
+(24.7, 45.5)
+zu warm
+optimal
+```
 
-The displayed values were retrieved from a real Shelly H&T Gen3 sensor.
+These example measurements were retrieved from a physical Shelly H&T Gen3 sensor.
+
+The temperature and relative humidity values are extracted from the sensor's JSON response, returned as a tuple, and passed to independent evaluation functions.
 
 ## Installation
 
@@ -69,172 +92,433 @@ The displayed values were retrieved from a real Shelly H&T Gen3 sensor.
 - Shelly H&T Gen3 connected to the local network
 - Network access to the Shelly device
 
-### 1. Install Dependencies
+### 1. Clone the Repository
 
-From the project directory, execute:
+```bash
+git clone https://github.com/florianerler/shelly-climate-monitor.git
+cd shelly-climate-monitor
+```
 
-`pip install -r requirements.txt`
+Alternatively, download the repository directly from GitHub.
 
-### 2. Configure the Sensor
+### 2. Install Dependencies
 
-For privacy and easier configuration, the sensor's local IP address is not hardcoded in the main application.
+Install the required Python package using:
 
-Copy the provided file:
+```bash
+python -m pip install -r requirements.txt
+```
 
-`config.example.py`
+The application uses the `requests` library for HTTP communication.
 
-Rename the copy to:
+The automated tests use Python's built-in `unittest` framework and require no additional testing package.
+
+### 3. Configure the Sensor
+
+For easier configuration and separation of device-specific settings, the Shelly IP address is stored outside the main application.
+
+Copy the provided configuration template:
+
+`config.example`
+
+Create a copy named:
 
 `config.py`
 
-Open `config.py` and enter your own Shelly IP address:
+Open `config.py` and configure your Shelly device:
 
-`SHELLY_IP = "192.168.1.XXX"`
+```python
+SHELLY_IP = "192.168.1.XXX"
+```
 
-Replace the placeholder with the actual IP address of your device.
+Replace the placeholder with your sensor's actual local IP address.
 
 The local `config.py` file is excluded from Git tracking through `.gitignore`.
 
-### 3. Run the Application
+The configuration file must exist when importing the main module, including during automated testing.
+
+### 4. Run the Application
 
 Execute:
 
-`python shelly_monitor.py`
+```bash
+python shelly_monitor.py
+```
 
-The application attempts to connect to the configured sensor and processes the received measurements.
+The application will attempt to contact the configured Shelly sensor and process the received measurements.
 
-**Note:** The battery-powered Shelly H&T Gen3 may enter sleep mode and temporarily become unavailable through HTTP. Repeated requests do not necessarily represent new measurements.
+The current program repeats the request cycle approximately every 30 seconds, with additional time required for network requests.
+
+**Important:** The battery-powered Shelly H&T Gen3 may enter sleep mode and temporarily become unavailable through HTTP.
+
+Repeated successful requests may also return unchanged measurements.
+
+Stop the program using `Ctrl+C` in the terminal.
 
 ## Program Architecture
 
-The software currently uses four functions.
+The application is organized into four main functions.
 
 | Function | Purpose |
 |---|---|
-| `abfrage()` | Performs the HTTP request and retrieves the JSON response |
-| `auswertung(wert)` | Extracts temperature and humidity values |
+| `abfrage()` | Sends an HTTP request and retrieves the response status and JSON data |
+| `auswertung(wert)` | Extracts temperature and humidity values from the JSON structure |
 | `komfort(wert)` | Evaluates the measured temperature |
 | `feuchtigkeitsbewertung(wert)` | Evaluates relative humidity |
 
+### Data Processing
+
+The processing sequence follows four stages:
+
+1. **Data acquisition:** The sensor is contacted through its local HTTP RPC interface.
+2. **Data extraction:** Temperature and humidity are extracted from the JSON response.
+3. **Data evaluation:** Both measurements are independently classified.
+4. **Console output:** Measurements and classifications are displayed.
+
 The extracted measurements are returned as a tuple:
 
-`(temperature, humidity)`
+```python
+(temperature, humidity)
+```
 
-This allows further evaluation without repeating the data extraction.
+The tuple allows individual values to be accessed and passed to subsequent functions.
 
-### Temperature Evaluation
+### Main Program Execution
+
+The application's measurement loop is protected by:
+
+```python
+if __name__ == "__main__":
+```
+
+This allows functions to be imported into another Python module without automatically starting the continuous measurement loop.
+
+This separation was introduced during the automated testing stage and represents an important improvement in the application's structure.
+
+## Temperature Evaluation
+
+The `komfort(wert)` function evaluates temperature using the following conditions:
 
 | Temperature | Classification |
 |---|---|
-| Below 18.9 °C | zu kalt |
-| 18.9–23.1 °C | komfort |
-| Above 23.1 °C | zu warm |
+| Below 19 °C | `zu kalt` |
+| 19–23 °C, inclusive | `komfort` |
+| Above 23 °C | `zu warm` |
 
-### Humidity Evaluation
+These classifications are based on developer-defined thresholds.
+
+They are intended for programming exercises and simplified room climate evaluation rather than as universal indoor comfort standards.
+
+## Humidity Evaluation
+
+The `feuchtigkeitsbewertung(wert)` function evaluates relative humidity.
 
 | Relative Humidity | Classification |
 |---|---|
-| Below 34.9% | zu trocken |
-| 34.9–65.1% | optimal |
-| Above 65.1% | zu feucht |
+| Below 35% | `zu trocken` |
+| 35–65%, inclusive | `optimal` |
+| Above 65% | `zu feucht` |
 
-These thresholds are preliminary and developer-defined. They are intended for testing and are not universal indoor climate standards.
+The thresholds are preliminary and serve educational purposes.
+
+Actual indoor climate assessment depends on additional factors, including temperature, occupancy, ventilation, and building conditions.
+
+## Automated Unit Testing
+
+The final development stage introduced an automated test suite using Python's standard `unittest` framework.
+
+The purpose of the test suite is to verify that the application's evaluation and data extraction functions return the expected results for predefined inputs.
+
+These tests operate without requiring an active connection to the physical Shelly device.
+
+### Test File
+
+`test_shelly_monitor.py`
+
+The test suite contains three test classes:
+
+- `TestKomfort`
+- `TestFeuchtigkeitsbewertung`
+- `TestAuswertung`
+
+### Temperature Tests
+
+| Test | Input | Expected Result |
+|---|---|---|
+| Normal temperature | 21 °C | `komfort` |
+| Low temperature | 17 °C | `zu kalt` |
+| High temperature | 25 °C | `zu warm` |
+| Lower boundary | 19 °C | `komfort` |
+| Upper boundary | 23 °C | `komfort` |
+
+**5 temperature tests**
+
+### Humidity Tests
+
+| Test | Input | Expected Result |
+|---|---|---|
+| Normal humidity | 50% | `optimal` |
+| High humidity | 80% | `zu feucht` |
+| Low humidity | 20% | `zu trocken` |
+| Lower boundary | 35% | `optimal` |
+| Upper boundary | 65% | `optimal` |
+
+**5 humidity tests**
+
+### Data Extraction Test
+
+The eleventh test verifies the `auswertung()` function using simulated Shelly sensor data.
+
+The function receives a nested dictionary containing temperature and humidity measurements.
+
+The test verifies that the function extracts the values correctly and returns the expected tuple.
+
+**Input data:**
+
+```python
+{
+    "temperature:0": {"tC": 20},
+    "humidity:0": {"rh": 50}
+}
+```
+
+**Expected return value:**
+
+```python
+(20, 50)
+```
+
+This test verifies the application's handling of nested dictionaries without requiring physical sensor communication.
+
+**1 data extraction test**
+
+### Running the Tests
+
+From the project directory, execute:
+
+```bash
+python -m unittest -v
+```
+
+The `-v` argument enables verbose output, displaying the individual test results.
+
+If Python is not available through the `python` command, use the Python interpreter associated with your development environment.
+
+### Successful Test Execution
+
+![Automated unit test results](assets/test_output.png)
+
+*Terminal screenshot showing the successful execution of all eleven automated unit tests.*
+
+Verified local test result:
+
+```text
+----------------------------------------------------------------------
+Ran 11 tests in 0.003s
+
+OK
+```
+
+All eleven tests completed successfully during the final local test run.
+
+### Testing Scope
+
+The automated tests currently cover:
+
+- Temperature classifications
+- Humidity classifications
+- Exact evaluation boundaries
+- JSON-like measurement data extraction
+- Expected function return values
+
+The following behaviors are not covered by the unit tests:
+
+- Live HTTP communication
+- Sensor sleep and wake-up behavior
+- Network timeouts and connection failures
+- Malformed or incomplete JSON responses
+- Long-term operation and measurement reliability
+
+The test suite verifies defined portions of the application's software logic. It does not establish that the entire system is free of defects.
 
 ## Development History
 
 ### Stage 1: HTTP and JSON Fundamentals
 
-Development began with the `requests` library and a public HTTP testing service.
+Development began with Python's `requests` library and a public HTTP testing service.
 
-The initial objectives were to understand HTTP communication, response status codes, JSON parsing, function definitions and exception handling.
+The initial learning objectives included:
+
+- HTTP GET requests
+- Response status codes
+- JSON parsing
+- Function definitions
+- Return values
+- Exception handling
+
+These exercises established the foundation for communication with a physical sensor.
 
 ### Stage 2: Offline Sensor Testing
 
-An independent branch, `feature/offline-sensor-testing`, was created for processing simulated Shelly measurement data without requiring access to physical hardware.
+The development branch `feature/offline-sensor-testing` was created to experiment with simulated Shelly measurements.
 
-This allowed the JSON structure and data extraction to be tested separately from network connectivity.
+This allowed the expected JSON structure to be studied without requiring access to physical hardware.
+
+The exercises introduced nested dictionaries and measurement extraction.
 
 ### Stage 3: Live Sensor Integration
 
-The development continued in `feature/shelly-live-integration`.
+The project continued in `feature/shelly-live-integration`.
 
-The application was connected to the physical Shelly H&T Gen3 through its HTTP RPC interface.
+The application was connected to a physical Shelly H&T Gen3 through its local HTTP RPC interface.
 
-After resolving connectivity and data-processing errors, the first real temperature and humidity measurements were successfully retrieved.
+After troubleshooting connectivity and data-processing problems, the first real temperature and relative humidity measurements were successfully retrieved.
 
-### Stage 4: Modular Evaluation
+### Stage 4: Modular Climate Evaluation
 
-Two independent evaluation functions were developed.
+Independent evaluation functions were implemented for temperature and humidity.
 
-The first classifies room temperature, while the second evaluates relative humidity.
+Function parameters and return values were used to transfer measurements between different processing stages.
 
-Function parameters and return values are used to transfer data between the different processing stages.
+This introduced a more structured approach to software development and reduced dependencies between individual functions.
 
 ### Stage 5: Configuration Separation
 
-The device-specific IP address was moved into a separate local configuration file.
+The local sensor IP address was moved from the main application into a separate `config.py` file.
 
-The application now imports its sensor address from `config.py`, allowing developers to configure their own devices without modifying the main application logic.
+A public configuration template was included to make the software easier to adapt to other Shelly devices.
+
+The local configuration file was excluded from Git tracking through `.gitignore`.
+
+### Stage 6: Automated Unit Testing
+
+The final development branch, `feature/automated-tests`, introduced systematic software testing using Python's `unittest` framework.
+
+The main measurement loop was placed inside a `__main__` guard to allow individual functions to be imported independently.
+
+Automated tests were developed incrementally, beginning with a single temperature evaluation test.
+
+The test suite was subsequently expanded to cover:
+
+- Temperature classifications
+- Humidity classifications
+- Boundary conditions
+- Nested dictionary data extraction
+
+The final local execution completed successfully with eleven passing tests.
+
+This stage completed the project's planned educational development cycle.
 
 ## Programming Challenges and Lessons Learned
 
-This project also documents the process of learning Python through practical problem-solving.
+This project documents the process of learning Python through practical development, debugging, and experimentation.
 
-**HTTP connectivity:** Incorrect IP addresses, an invalid endpoint and intermittent sensor availability initially prevented successful communication.
+**HTTP connectivity:** Incorrect device addresses, endpoint problems, and intermittent sensor availability initially prevented successful communication.
 
-**Dictionary access:** The first JSON processing attempts resulted in `KeyError` exceptions because the exact structure of the returned data had not yet been handled correctly.
+**JSON processing:** Understanding the structure of nested dictionaries was essential for correctly extracting sensor measurements.
 
-**Python data types:** Returning multiple measurements required understanding the differences between tuples, sets, lists and dictionaries.
+**Python data types:** The project required distinguishing between integers, floats, strings, tuples, lists, sets, and dictionaries.
 
-**Variable scope:** Local variables defined inside functions were initially accessed from outside their valid scope. This was resolved using return values and function parameters.
+**Variable scope:** Local variables initially caused problems when accessed outside their functions. Return values and function parameters were introduced to resolve these issues.
 
-**Function calls:** Several errors were caused by confusing function references with function calls or passing unexpected argument types.
+**Function calls:** Differentiating between function references, function calls, input arguments, and returned values became an important learning objective.
 
-**Repeated execution:** Duplicate output revealed an unnecessary second function call.
+**Modular programming:** Evaluation functions were redesigned to accept independent input parameters instead of relying on external variables.
 
-**Modularity:** Early evaluation functions depended on variables from the main program. They were redesigned to work independently using input parameters.
+**Exception handling:** Basic network-related exceptions were handled to prevent certain connection failures from immediately terminating the program.
 
-**Debugging:** Reading tracebacks, inspecting return values and testing individual functions became essential parts of the development process.
+**Git and GitHub:** Feature branches, commits, push operations, pull requests, and merge operations were used to document and organize development.
 
-Each issue was addressed incrementally, improving both the software and the developer's understanding of Python.
+**Import behavior:** The differences between importing Python modules and executing scripts directly were explored while introducing automated tests.
+
+**Test classes and methods:** Python classes, inheritance from `unittest.TestCase`, and test methods were introduced during the final development stage.
+
+**Assertions:** `assertEqual()` was used to compare actual function results with expected values.
+
+**Testing data structures:** Simulated nested dictionaries were used to verify the data extraction function independently of hardware.
+
+**Error interpretation:** `NameError`, `TypeError`, `KeyError`, `SyntaxError`, `IndentationError`, and failed test assertions provided practical debugging experience.
+
+These challenges were addressed incrementally and helped establish a stronger understanding of Python programming and software testing.
 
 ## Known Limitations
 
+Although the learning project is complete, the application remains an educational prototype rather than a production-ready monitoring system.
+
+Current limitations include:
+
 - No permanent measurement storage
 - No measurement timestamps
-- No graphical visualization
-- HTTP response status codes are not yet explicitly validated
-- Limited error diagnostics
-- No automated test suite
-- Repeated responses may contain unchanged sensor values
-- Availability depends on the sensor's power and sleep behavior
-- Current comfort classifications are simplified
-- Polling and retry behavior require further refinement
+- No historical data visualization
+- HTTP response status codes are returned but not explicitly validated
+- Limited connection diagnostics
+- No automated HTTP integration tests
+- No automated validation of malformed JSON responses
+- Repeated requests may return unchanged sensor values
+- Sensor availability depends on its power supply and sleep behavior
+- Simplified temperature and humidity classifications
+- Fixed polling interval
+- Console output remains coupled to parts of the data processing logic
+- No long-term reliability testing
 
-## Planned Development
+These limitations are documented intentionally to distinguish the project's completed learning objectives from production-level requirements.
 
-Future development may include:
+## Future Development Perspective
 
-- Improved error handling and HTTP status validation
-- Automated offline tests
-- Timestamped measurements
-- CSV logging and database integration
-- Historical temperature and humidity charts
-- Dew point calculation
-- Heating and indoor climate analysis
-- MQTT communication
-- Support for additional sensor devices
-- Long-term monitoring through a dedicated Linux system
+**The Shelly Climate Monitor learning project is considered complete.**
+
+No further feature development is currently planned for this prototype.
+
+The source code, documentation, and automated tests will remain available as a reference for future work.
+
+The next development initiative will build upon the programming knowledge acquired here while moving toward independently designed measurement hardware and embedded systems.
+
+Areas of continued learning will include:
+
+- Microcontroller programming
+- Digital sensor communication
+- I²C and other hardware interfaces
+- Sensor measurement principles
+- Modular hardware and software architecture
+- Automated testing
+- Data logging and transmission
+- Measurement validation and comparative analysis
+- Printed circuit board design
+- Network-connected measurement systems
+
+The next initiative will be developed as an independent project rather than as a direct extension of the Shelly Climate Monitor source code.
 
 ## Development Approach
 
-Shelly Climate Monitor is primarily an independent learning and development project.
+Shelly Climate Monitor was developed as an independent educational programming project.
 
-The software is developed incrementally, using documentation, experiments, debugging and practical testing with real hardware.
+Its development followed an incremental approach:
 
-AI assistance is used for conceptual explanations, debugging hints and documentation. The programming work focuses on independently applying and understanding the concepts involved.
+1. Establish fundamental concepts.
+2. Experiment with small functional components.
+3. Investigate and resolve programming errors.
+4. Connect the software to real hardware.
+5. Improve modularity and configuration.
+6. Introduce automated software testing.
+7. Document the completed development process.
 
-The repository is intended to provide a transparent record of both technical progress and the challenges encountered during development.
+AI assistance was used for conceptual explanations, incremental debugging guidance, and documentation.
+
+The programming exercises emphasized independently understanding and applying the concepts involved.
+
+The repository preserves the progression from an elementary HTTP client to a functional, hardware-connected Python application with automated tests.
+
+## Project Conclusion
+
+Shelly Climate Monitor successfully achieved its intended educational objectives.
+
+The project provided practical experience with Python, HTTP communication, JSON processing, function design, exception handling, Git-based development, and automated unit testing.
+
+Its final development milestone consisted of eleven successfully executed unit tests covering temperature evaluation, humidity evaluation, and simulated sensor data extraction.
+
+Although the application remains limited in scope, it established a useful technical and methodological foundation for future development.
+
+**The learning project is now complete, and development will continue in a new, independent project focused on custom-built measurement systems.**
 
 ## License
 

@@ -1,6 +1,7 @@
 import requests
 import time
 from config import SHELLY_IP
+
 def abfrage():
     a = requests.get(f"http://{SHELLY_IP}/rpc/Shelly.GetStatus", timeout=5)
     return (a.status_code, a.json())
@@ -28,32 +29,22 @@ def feuchtigkeitsbewertung(wert):
         return("zu feucht")
     else:
         return("optimal")
-
     
-#testdaten = {
-#    "temperature:0": {"tC": 22.4},
-#    "humidity:0": {"rh": 48.5}
-#}
-    
-
-while True:
-    try:
-        print("Versuche Verbindung herzustellen...")
-        ergebnis=abfrage()
-        messwerte=auswertung(ergebnis[1])
-        print(messwerte)
-        komfortstatus=komfort(messwerte[0])
-        print(komfortstatus)
-        feuchtigkeitsstatus=feuchtigkeitsbewertung(messwerte[1])
-        print(feuchtigkeitsstatus)
-        
-
-        
-    except requests.exceptions.RequestException:
-        print("Verbindung fehlgeschlagen!")
-        print("Nächster Versuch in 30 Sekunden..")
-        
-#auswertung(testdaten)        
+if __name__ == "__main__":
+    while True:
+        try:
+            print("Versuche Verbindung herzustellen...")
+            ergebnis=abfrage()
+            messwerte=auswertung(ergebnis[1])
+            print(messwerte)
+            komfortstatus=komfort(messwerte[0])
+            print(komfortstatus)
+            feuchtigkeitsstatus=feuchtigkeitsbewertung(messwerte[1])
+            print(feuchtigkeitsstatus)
+            
+        except requests.exceptions.RequestException:
+            print("Verbindung fehlgeschlagen!")
+            print("Nächster Versuch in 30 Sekunden..")  
         
     time.sleep(30)
     
