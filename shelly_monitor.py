@@ -41,10 +41,11 @@ if __name__ == "__main__":
             print(komfortstatus)
             feuchtigkeitsstatus=feuchtigkeitsbewertung(messwerte[1])
             print(feuchtigkeitsstatus)
-            
+
         except requests.exceptions.RequestException:
             print("Verbindung fehlgeschlagen!")
             print("Nächster Versuch in 30 Sekunden..")  
         
         time.sleep(30)
+
     
